@@ -1,0 +1,25 @@
+.NavigationItem {
+    padding: 0px 15px;
+}
+.NavigationItem a {
+    font-family: "Montserrat", sans-serif;
+    height: 100%;
+    text-decoration: none;
+    color: #757373;
+    font-size: 20px;
+    padding: 10px 25px;
+    width: 100%;
+    position: relative;
+    border-radius: 5px;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.NavigationItem a:active,
+.NavigationItem a.active {
+    font-family: "Montserrat", sans-serif;
+    background-color: #57b3e4;
+
+    color: #ffffff;
+    font-weight: 700;
+}
