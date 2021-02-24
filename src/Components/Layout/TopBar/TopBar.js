@@ -1,5 +1,4 @@
 import React from "react";
-
 import { navigationContainer, linksContainer } from "./style";
 import NavigationItem from "./NavigationItem/NavigationItem";
 import Logo from "./Logo/Logo";

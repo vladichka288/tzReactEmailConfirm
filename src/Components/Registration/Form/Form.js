@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { css } from "@emotion/css";
 import * as classes from "./style.js";
+import firebase from "firebase";
+import { useHistory } from "react-router";
+import * as functions from "../../../Functions/Verification";
 var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
 export default function Form() {
+  const history = useHistory();
   const [passwordValidity, setPasswordValidity] = useState(false);
   const [emailValidity, setEmailValidity] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const changePasswordHandler = (event) => {
     setPassword(event.target.value);
-    if (event.target.value < 8) {
+    if (event.target.value.length < 8) {
       setPasswordValidity(false);
     } else {
       setPasswordValidity(true);
@@ -24,12 +27,31 @@ export default function Form() {
       setEmailValidity(true);
     }
   };
+  let redirect = null;
   const submitHandler = (event) => {
     event.preventDefault();
     if (emailValidity && passwordValidity) {
-      console.log("success");
-    } else {
-      console.log("bad");
+      if (!firebase.apps.length) {
+        firebase.initializeApp(functions.firebaseConfig);
+      } else {
+        firebase.app(); // if already initialized, use that one
+      }
+      functions
+        .createUser(email, password, firebase)
+        .then((user) => {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({ email, password, date: Date.now() })
+          );
+          return user.sendEmailVerification();
+        })
+        .then(() => {
+          history.push("/confirmPage");
+          return;
+        })
+        .catch((err) => {
+          functions.errorHandling(err);
+        });
     }
   };
   let passwordHintStyle = css`
@@ -49,14 +71,10 @@ export default function Form() {
   `;
   return (
     <form className={classes.FormContainer}>
-      <style>
-        @import
-        url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap');
-      </style>
-
+      {redirect}
       <div style={{ marginBottom: "30px" }}>
         <div>
-          <label className={classes.Label} for="email">
+          <label className={classes.Label} htmlFor="email">
             Email
           </label>
         </div>
@@ -70,7 +88,7 @@ export default function Form() {
       </div>
       <div style={{ marginBottom: "30px" }}>
         <div>
-          <label className={classes.Label} for="password">
+          <label className={classes.Label} htmlFor="password">
             Password <text className={passwordHintStyle}>(min 8 symbols)</text>
           </label>
         </div>

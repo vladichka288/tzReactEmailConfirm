@@ -1,14 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Normalize from 'react-normalize';
+import Normalize from "react-normalize";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import {CookieProvider} from "./Context/CookieContext"
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-    <Normalize />
-      <App />
+      <Normalize />
+      <CookieProvider initialCookie={false}>
+        <App />
+      </CookieProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
